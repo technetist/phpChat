@@ -1,3 +1,20 @@
+<?php 
+	include "db.php";
+
+	if (isset($_POST['send'])) {
+		$_SESSION['username'] = $_POST['username'];
+		$message = $_POST['message'];
+
+		$query = "INSERT INTO messages (message)VALUES ('$message')";
+
+		$result = mysqli_query($db, $query);
+
+	}
+
+	$sql = "SELECT * FROM messages";
+	$rows = mysqli_query($db, $sql);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,11 +22,12 @@
 	<title>Adrien's Chat App</title>
 
 	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
 
 	<!-- Optional theme -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous" />
+	
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
 	
 </head>
 <body>
@@ -19,10 +37,24 @@
 			<div class="col-md-8 col-md-offset-2 display">
 				<h1 class="text-center">Adrien's Chat App</h1>
 				<div class="message">
+					<?php while($row = mysqli_fetch_assoc($rows)): ?>
 					
+					<strong><?php echo $_SESSION['myname'] ?></strong>
+					<?php echo $row['message'] ?> <br>
+
+					<?php endwhile; ?>
 				</div>
 				<form action="" method="post">
+					<?php if(isset($_SESSION["username"])): ?>
+					<p><?php echo $_SESSION["username"]; ?><p>
+					<?php else: ?>	
+					<p>Username:</p>
 					<input type="text" name="username" class="form-control">
+					<?php endif; ?>
+					<p>Message:</p>
+					<textarea name="message" class="form-control"></textarea>
+
+					<input type="submit" value="Send" name="send" class="btn btn-primary">
 				</form>
 			</div>
 
@@ -36,5 +68,7 @@
 	
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+	<script src="js/app.js"></script>
 </body>
 </html>
