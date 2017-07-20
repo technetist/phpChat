@@ -1,18 +1,5 @@
 <?php 
 	include "db.php";
-
-	if (isset($_POST['send'])) {
-		$_SESSION['username'] = $_POST['username'];
-		$message = $_POST['message'];
-
-		$query = "INSERT INTO messages (message)VALUES ('$message')";
-
-		$result = mysqli_query($db, $query);
-
-	}
-
-	$sql = "SELECT * FROM messages";
-	$rows = mysqli_query($db, $sql);
 ?>
 
 <!DOCTYPE html>
@@ -37,14 +24,9 @@
 			<div class="col-md-8 col-md-offset-2 display">
 				<h1 class="text-center">Adrien's Chat App</h1>
 				<div class="message">
-					<?php while($row = mysqli_fetch_assoc($rows)): ?>
 					
-					<strong><?php echo $_SESSION['myname'] ?></strong>
-					<?php echo $row['message'] ?> <br>
-
-					<?php endwhile; ?>
 				</div>
-				<form action="" method="post">
+				<form action="" method="post" id="form">
 					<?php if(isset($_SESSION["username"])): ?>
 					<p><?php echo $_SESSION["username"]; ?><p>
 					<?php else: ?>	
@@ -52,7 +34,7 @@
 					<input type="text" name="username" class="form-control">
 					<?php endif; ?>
 					<p>Message:</p>
-					<textarea name="message" class="form-control"></textarea>
+					<textarea id="box" name="message" class="form-control"></textarea>
 
 					<input type="submit" value="Send" name="send" class="btn btn-primary">
 				</form>
@@ -70,5 +52,54 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 	<script src="js/app.js"></script>
+
+	<script>
+		$(document).ready(function(){
+
+			function scroll() {
+				$('.message').animate({
+					scrollTop: $('.message')[0].scrollHeight
+				},1000);
+			}
+
+			setInterval(function(){
+				$('.message').load('load.php');
+
+
+
+			}, 2000);
+
+			$('#form').on('submit', function(e) {
+				e.preventDefault();
+				$.ajax({
+					url: 'add.php',
+					method: 'POST',
+					data: $('#form').serialize(),
+					success: function(e) {
+						$('.message').load('load.php');
+						$('#form')[0].reset();
+						scroll();
+					}
+				});
+			});
+		});
+
+		$('#box').keypress(function(e){
+			if (e.which == 13) {
+				$.ajax({
+					url: 'add.php',
+					method: 'POST',
+					data: $('#form').serialize(),
+					success: function(e) {
+						$('.message').load('load.php');
+						$('#form')[0].reset();
+						scroll();
+					}
+
+				});
+			};
+		});
+
+	</script>
 </body>
 </html>
